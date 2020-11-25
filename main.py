@@ -1,11 +1,16 @@
 from board import Board
-from solver import Solver
+from brute import Brute
+import time
 
 
 board = Board()
-board.parseBoard("boards/insane.txt")
+board.parse_board("boards/hard.txt")
 
-solver = Solver(board)
-solver.solve()
+brute = Brute(board)
+start = time.time()
+brute.solve()
+end = time.time()
 
+print("")
+print("Solved in: {:f} seconds".format(end - start))
 board.print()

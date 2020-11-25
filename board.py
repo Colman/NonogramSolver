@@ -1,26 +1,34 @@
-
-'''
-Glossary:
-	Section - 3x3 sub square on the board (indexed row by row)
-	Index - Integer index of a cell. (Indexed row by row)
-	Label - Another way to get a cell. Format: A0, B3, etc.
-			(Letters are columns, numbers are rows)
-'''
-
 class Board:
+	'''
+	Holds the representation of the board state
+	as well as helper functions for making moves,
+	getting rows, etc.
+	'''
+
 	cells = [] #1d array that stores values row by row
-	staticIndices = [] #Indices of cells that cannot be changed
+	static_indices = [] #Indices of cells that cannot be changed
 
 	def __init__(self):
+		#Blank cells are the * character
 		for i in range(81):
 			self.cells.append("*")
 
 
-	def parseBoard(self, path):
+
+	def parse_board(self, path):
+		'''
+		Parses a board from a txt file.
+		Args:
+			path - Path to file
+		Returns:
+			None
+		'''
+
 		f = open(path, "r")
-		boardStr = f.read()
+		board_str = f.read()
 		cells = []
-		for c in boardStr:
+		for c in board_str:
+			#Ignore white space and border chars
 			try:
 				if c == "*":
 					cells.append(c)
@@ -29,44 +37,95 @@ class Board:
 			except:
 				pass
 
-		self.staticIndices = []
+		#Fill in indices that cannot be changed
+		self.static_indices = []
 		for i in range(len(cells)):
 			if cells[i] != "*":
-				self.staticIndices.append(i)
+				self.static_indices.append(i)
 
 		self.cells = cells
 			
 
 
-	def getCell(self, index):
+	def get_cell(self, index):
+		'''
+		Get the value of a cell
+		Args:
+			index - The index of the cell ranging from [0-80]
+		Returns:
+			Value of the cell
+		'''
+
 		return self.cells[index]
 
 
 
-	def setCell(self, index, value):
+	def set_cell(self, index, value):
+		'''
+		Sets the value of a cell
+		Args:
+			index - The index of the cell ranging from [0-80]
+			value - The value of the cell ranging from [1-9]
+		Returns:
+			None
+		'''
+
 		self.cells[index] = value
 
 
 
-	def setCellByLabel(self, label, value):
-		index = self.getIndexFromLabel(label)
-		self.setCell(index, value)
+	def set_cell_by_label(self, label, value):
+		'''
+		Sets the value of a cell using a label
+		Args:
+			label - Label of the cell. (A0, C3, etc.)
+			value - The value of the cell ranging from [1-9]
+		Returns:
+			None
+		'''
+
+		index = self.get_index_from_label(label)
+		self.set_cell(index, value)
 
 
 
-	def getIndexFromLabel(self, label):
+	def get_index_from_label(self, label):
+		'''
+		Converts label to index
+		Args:
+			label - Label of the cell. (A0, C3, etc.)
+		Returns:
+			The index of the cell ranging from [0-80]
+		'''
+
 		letters = "ABCDEFGHI"
 		col = letters.find(label[0])
 		return int(label[1]) * 9 + col
 
 
 
-	def getRow(self, index):
+	def get_row(self, index):
+		'''
+		Get row by index
+		Args:
+			index - Index of the row ranging from [0-8]
+		Returns:
+			The row as an array
+		'''
+
 		return self.cells[index * 9:index * 9 + 9]
 
 
 
-	def getCol(self, index):
+	def get_col(self, index):
+		'''
+		Get column by index
+		Args:
+			index - Index of the column ranging from [0-8]
+		Returns:
+			The column as an array
+		'''
+
 		col = []
 		for i in range(9):
 			col.append(self.cells[index + i * 9])
@@ -75,66 +134,103 @@ class Board:
 
 
 
-	def getSection(self, index):
-		topLeft = None
+	def get_section(self, index):
+		'''
+		Get section by index
+		Args:
+			index - Index of the section ranging from [0-8]
+					(Sections are indexed row by row)
+		Returns:
+			The section as an array sorted row by row
+		'''
+
+		top_left = None
 		if index < 3:
-			topLeft = index * 3
+			top_left = index * 3
 
 		elif index < 6:
-			topLeft = (index - 3) * 3 + 27
+			top_left = (index - 3) * 3 + 27
 
 		else:
-			topLeft = (index - 6) * 3 + 54
+			top_left = (index - 6) * 3 + 54
 
 		section = []
-		section.extend(self.cells[topLeft:topLeft + 3])
-		section.extend(self.cells[topLeft + 9:topLeft + 12])
-		section.extend(self.cells[topLeft + 18:topLeft + 21])
+		section.extend(self.cells[top_left:top_left + 3]) #First row of section
+		section.extend(self.cells[top_left + 9:top_left + 12]) #Second row of section
+		section.extend(self.cells[top_left + 18:top_left + 21]) #Third row of section
 
 		return section
 
 
 
-	def isValidMove(self, index, value):
-		if index in self.staticIndices:
+	def is_valid_move(self, index, value):
+		'''
+		Tests whether a move is valid
+		Args:
+			index - Index of the cell ranging from [0-80]
+			value - The value of the cell ranging from [1-9]
+		Returns:
+			True if the move is valid, False otherwise
+		'''
+
+		#Check if index is unchangeable
+		if index in self.static_indices:
 			return False
 
-		old = self.cells[index]
-		self.setCell(index, value)
+		old = self.cells[index] #Save old value
+		self.set_cell(index, value)
 
+		#Check if every row section and column is valid
 		valid = True
 		for i in range(9):
-			row = self.getRow(i)
-			if not self.isUnique(row):
+			row = self.get_row(i)
+			if not self.is_unique(row):
 				valid = False
 				break
 
-			col = self.getCol(i)
-			if not self.isUnique(col):
+			col = self.get_col(i)
+			if not self.is_unique(col):
 				valid = False
 				break
 
-			section = self.getSection(i)
-			if not self.isUnique(section):
+			section = self.get_section(i)
+			if not self.is_unique(section):
 				valid = False
 				break
 			
 
-		self.setCell(index, old)
+		self.set_cell(index, old) #Revert move
 		return valid
 
 
 
-	def playMove(self, index, value):
-		if not self.isValidMove(index, value):
+	def play_move(self, index, value):
+		'''
+		Plays move if valid. Else raises an exception
+		Args:
+			index - Index of the cell ranging from [0-80]
+			value - The value of the cell ranging from [1-9]
+		Returns:
+			None
+		'''
+
+		if not self.is_valid_move(index, value):
 			raise Exception("Invalid move")
 
-		self.setCell(index, value)
+		self.set_cell(index, value)
 
 
 
 	@staticmethod
-	def isUnique(arr):
+	def is_unique(arr):
+		'''
+		Given an array, checks if every value is unique. (Ignores the * char)
+		Args:
+			arr - Array of values
+		Returns:
+			True if the elements are unique, False otherwise
+		'''
+
 		vals = []
 		for x in arr:
 			if x != "*":
@@ -145,20 +241,28 @@ class Board:
 
 
 	def print(self):
+		'''
+		Prints the formatted board
+		Args:
+			None
+		Returns:
+			None
+		'''
+
 		print("")
 		print("    A B C   D E F   G H I")
 		print("  -------------------------")
 
 		for i in range(9):
-			row = self.getRow(i)
-			rowStr = str(i) + " | "
+			row = self.get_row(i)
+			row_str = str(i) + " | "
 
 			for j in range(3):
 				section = row[j * 3:j * 3 + 3]
-				rowStr += " ".join(str(x) for x in section)
-				rowStr += " | "
+				row_str += " ".join(str(x) for x in section)
+				row_str += " | "
 
-			print(rowStr)
+			print(row_str)
 
 			if i == 2 or i == 5 or i == 8:
 				print("  -------------------------")
