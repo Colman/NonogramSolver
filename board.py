@@ -1,12 +1,46 @@
 
+'''
+Glossary:
+	Section - 3x3 sub square on the board (indexed row by row)
+	Index - Integer index of a cell. (Indexed row by row)
+	Label - Another way to get a cell. Format: A0, B3, etc.
+			(Letters are columns, numbers are rows)
+'''
 
 class Board:
 	cells = [] #1d array that stores values row by row
-
+	staticIndices = [] #Indices of cells that cannot be changed
 
 	def __init__(self):
 		for i in range(81):
 			self.cells.append("*")
+
+
+	def parseBoard(self, path):
+		f = open(path, "r")
+		boardStr = f.read()
+		cells = []
+		for c in boardStr:
+			try:
+				if c == "*":
+					cells.append(c)
+				else:
+					cells.append(int(c))
+			except:
+				pass
+
+		self.staticIndices = []
+		for i in range(len(cells)):
+			if cells[i] != "*":
+				self.staticIndices.append(i)
+
+		self.cells = cells
+			
+
+
+	def getCell(self, index):
+		return self.cells[index]
+
 
 
 	def setCell(self, index, value):
@@ -62,6 +96,9 @@ class Board:
 
 
 	def isValidMove(self, index, value):
+		if index in self.staticIndices:
+			return False
+
 		old = self.cells[index]
 		self.setCell(index, value)
 
@@ -88,6 +125,14 @@ class Board:
 
 
 
+	def playMove(self, index, value):
+		if not self.isValidMove(index, value):
+			raise Exception("Invalid move")
+
+		self.setCell(index, value)
+
+
+
 	@staticmethod
 	def isUnique(arr):
 		vals = []
@@ -102,7 +147,7 @@ class Board:
 	def print(self):
 		print("")
 		print("    A B C   D E F   G H I")
-		print("  |-------|-------|-------|")
+		print("  -------------------------")
 
 		for i in range(9):
 			row = self.getRow(i)
