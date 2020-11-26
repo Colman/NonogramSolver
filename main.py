@@ -14,6 +14,18 @@ Brute force algorithm will always find a solution.
 ***Candidate method cannot find solutions to the hard or
    insane boards***
 '''
+'''
+board = Board()
+
+board.parse_board("boards/easy.txt")
+board.print()
+
+cand = candidates.exhaust_candidates(board)
+
+#board.print()
+'''
+
+
 
 board = Board()
 puzzles = ["boards/easy.txt", "boards/medium.txt", "boards/hard.txt", "boards/insane.txt"]

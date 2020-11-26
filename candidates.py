@@ -69,7 +69,7 @@ def update_candidates(board, candidates):
 
     
     updated_candidates = {}
-    for cell, values in candidates.items():
+    for cell, values in candidates.items(): #iterate through current candidates
         value_set = set()
         for val in values:
             if not board.is_valid_move(cell, val):
@@ -78,7 +78,7 @@ def update_candidates(board, candidates):
                 value_set.add(val)
         updated_candidates[cell] = value_set
 
-    updated_bool = not updated_candidates == candidates
+    updated_bool = not updated_candidates == candidates #True if no updates made
     
     return updated_candidates, updated_bool
     
@@ -101,14 +101,13 @@ def exhaust_candidates(board):
     #board_updates = 0
     while board_changed:
         board_changed = check_candidates(board, candidates)
+        #if not board_changed: print("Final board:")
+        #board.print()
         candidates, candidates_updated = update_candidates(board, candidates)
         #board_updates += 1
     #print("Board updates: ", board_updates)
-    '''
-    candidate_updates = 0
-    while candidates_updated:
-        candidates, candidates_updated = update_candidates(board, candidates)
-    '''
+
+
     return candidates
 
 
