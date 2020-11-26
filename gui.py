@@ -18,7 +18,7 @@ count = 0
 
 for section in range(9):
     cells.extend(board.get_section(section))
-print(cells[:30])
+# print(cells[:30])
 
 
 def play_move(loc, val, board):
@@ -30,11 +30,9 @@ def play_move(loc, val, board):
     for section in range(9):
         updated_indeces.extend(tmp_board.get_section(section))
     # print(updated_indeces[:30])
-
     # print(board.get_cells()[:30])
     loc_index = updated_indeces.index(loc)
     board.play_move(loc_index,int(val))
-
 
 
 # -------- EVENT HANDLING --------
@@ -51,11 +49,14 @@ def handle_cell_click(cells, cells_location, digit, board):
     digit.config(bg=SUDOKU_CLICK)
     cell_history.append(digit)
     if active_option is not None:
-        try:
-            play_move(cells_location, active_option, board)
+        if active_option == "*":
             digit.config(text=active_option)
-        except Exception:
-            digit.config(bg=WRONG_MOVE)            
+        else:
+            try:
+                play_move(cells_location, active_option, board)
+                digit.config(text=active_option)
+            except Exception:
+                digit.config(bg=WRONG_MOVE)            
 
 
 def handle_option_click(option):
@@ -70,52 +71,76 @@ def handle_option_click(option):
 
 
 def handle_play_button_click(event):
+    frm_play_sudoku.grid()
+    frm_play_choice_btns.grid()
     print("play")
 
 def handle_solver_button_click(event):
+    frm_play_sudoku.grid_forget()
+    frm_play_choice_btns.grid_forget()
     print("solver")
 
-
+def how_to_pop_up():
+    toplevel = tk.Toplevel()
+    lbl_how_to = tk.Label(
+        master=toplevel,
+        text="herro", ####ADDDD HOWWW TOO TEXT HEEEEREEEEEE
+        font=("Courier", 16),
+        height=0,
+        width=80,
+    )
+    lbl_how_to.grid(row=0, column=0, padx=10, pady=10)
 
 window = tk.Tk()
 window.title("Play Sudoku")
 
-# frm_buttons = tk.Frame(
-#     master=window,
-#     relief=tk.FLAT,
-#     borderwidth=1,
-# )
+frm_buttons = tk.Frame(
+    master=window,
+    relief=tk.FLAT,
+    borderwidth=1,
+)
 
-# btn_play = tk.Button(
-#     master=frm_buttons,
-#     text="PLAY",
-#     font=("Courier", 44),
-# )
+btn_play = tk.Button(
+    master=frm_buttons,
+    text="PLAY",
+    font=("Courier", 22),
+    bg=BASE,
+)
 
-# btn_play.bind(
-#     "<Button-1>",
-#     handle_play_button_click,
-# )
+btn_play.bind(
+    "<Button-1>",
+    handle_play_button_click,
+)
 
-# btn_play.grid(row=0, column=0)
+btn_play.grid(row=0, column=0, padx=10, pady=10)
 
-# btn_solver = tk.Button(
-#     master=frm_buttons,
-#     text="SOLVER",
-#     font=("Courier", 44),
-# )
+btn_solver = tk.Button(
+    master=frm_buttons,
+    text="SOLVER",
+    font=("Courier", 22),
+    bg=BASE,
+)
 
-# btn_solver.bind(
-#     "<Button-1>",
-#     handle_solver_button_click,
-# )
+btn_solver.bind(
+    "<Button-1>",
+    handle_solver_button_click,
+)
 
-# btn_solver.grid(row=0, column=1)
+btn_solver.grid(row=0, column=1, padx=10, pady=10)
 
+btn_how_to = tk.Button(
+    master=frm_buttons,
+    text="HOW TO",
+    font=("Courier", 22),
+    bg=BASE,
+    command=how_to_pop_up,
+)
 
-# frm_buttons.pack(padx=5)
+btn_how_to.grid(row=0, column=3, padx=10, pady=10)
 
-frm_sudoku_game = tk.Frame(
+frm_buttons.grid(padx=5)
+
+frm_play_sudoku = tk.Frame(
     master=window,
     relief=tk.FLAT,
     borderwidth=1,
@@ -124,7 +149,7 @@ frm_sudoku_game = tk.Frame(
 for i in range(3):
     for j in range(3):
         frm_board = tk.Frame(
-            master=frm_sudoku_game,
+            master=frm_play_sudoku,
             relief=tk.GROOVE,
             borderwidth=4,
         )
@@ -165,7 +190,7 @@ for i in range(3):
                 count += 1
                 lbl_digit.pack( fill="both", expand=True)
 
-frm_sudoku_game.pack()
+frm_play_sudoku.grid()
 
 frm_play_choice_btns = tk.Frame(
     master=window,
@@ -203,7 +228,11 @@ for i in range(2):
         lbl_option.pack()
         c += 1
 
-frm_play_choice_btns.pack(pady=3)
+frm_play_choice_btns.grid(pady=3)
+
+frm_solve_sudoku = tk.Frame(
+    master=window,
+)
 
 window.mainloop()
 

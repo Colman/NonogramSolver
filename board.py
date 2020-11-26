@@ -8,11 +8,13 @@ class Board:
 	cells = [] #1d array that stores values row by row
 	static_indices = [] #Indices of cells that cannot be changed
 
-	def __init__(self):
-		#Blank cells are the * character
-		for i in range(81):
-			self.cells.append("*")
-
+	def __init__(self, cells=[]):
+		if len(cells) == 0 :
+			#Blank cells are the * character
+			for i in range(81):
+				self.cells.append("*")
+		else:
+			self.cells = cells
 
 
 	def parse_board(self, path):
@@ -268,3 +270,6 @@ class Board:
 				print("  -------------------------")
 
 		print("")
+
+	def get_cells(self):
+		return self.cells
