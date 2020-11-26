@@ -98,16 +98,17 @@ def exhaust_candidates(board):
     
     candidates = initial_candidates(board)
 
-    board_updates = 0
+    #board_updates = 0
     while board_changed:
         board_changed = check_candidates(board, candidates)
         candidates, candidates_updated = update_candidates(board, candidates)
-        updates += 1
-    print("Board updates: ", board_updates)
-
+        #board_updates += 1
+    #print("Board updates: ", board_updates)
+    '''
     candidate_updates = 0
     while candidates_updated:
         candidates, candidates_updated = update_candidates(board, candidates)
+    '''
     return candidates
 
 
