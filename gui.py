@@ -2,237 +2,202 @@ import tkinter as tk
 from tkinter import ttk
 from board import Board
 
-#COlOURS
-BASE = "#FFC0CB" #pink
-SUDOKU_CLICK = "#ffe4e1"
-OPTION_CLICK = "#f78fa7"
-STATIC_INDICES = "#fbcce7"
-WRONG_MOVE = "#c32148"
+
+class Gui:
+    '''
+    This class handles the user interface for
+    SlickSudoku.
+    '''
+
+    #Colors
+    BASE = "#ffc0cb"
+    SUDOKU_CLICK = "#ffe4e1"
+    OPTION_CLICK = "#f78fa7"
+    STATIC_INDICES = "#fbcce7"
+    WRONG_MOVE = "#c32148"
+
+    #Events
+    active_option = None
+    cell_history = []
+    option_history = []
+    string_vars = {}
+
+    #Help
+    help_str = '''
+    Welcome to SlickSudoku! Please enter a digit from 1 to 9 in each of the boxes.
+    A number can be played as long as there are no duplicate numbers in the rows,
+    columns, or 3x3 sections on the board. To solve the puzzle, fill in every square.
+    If a move is invalid, the square will turn bright red.
+    '''
 
 
-board = Board()
-board.parse_board("boards/hard.txt")
-# print(board.get_cells()[:30])
-cells = []
-count = 0
-
-for section in range(9):
-    cells.extend(board.get_section(section))
-# print(cells[:30])
+    def __init__(self, board, solver):
+        self.board = board
+        self.solver = solver
 
 
-def play_move(loc, val, board):
-    indices = [] #to preserve indeces cause i'm too tired to do math
-    for i in range(81):
-        indices.append(i)
-    tmp_board = Board(indices)
-    updated_indeces = []
-    for section in range(9):
-        updated_indeces.extend(tmp_board.get_section(section))
-    # print(updated_indeces[:30])
-    # print(board.get_cells()[:30])
-    loc_index = updated_indeces.index(loc)
-    board.play_move(loc_index,int(val))
+
+    def on_clear_click(self):
+        for index in self.string_vars.keys():
+            self.string_vars[index].set("")
+            self.board.set_cell(int(index), "*")
 
 
-# -------- EVENT HANDLING --------
-active_option = None
-cell_history = []
-option_history = []
 
-def handle_cell_click(cells, cells_location, digit, board):
-    global active_option
-    global cell_history
-    if len(cell_history) != 0:
-        cell_history[0].config(bg=BASE)
-        cell_history.pop()
-    digit.config(bg=SUDOKU_CLICK)
-    cell_history.append(digit)
-    if active_option is not None:
-        if active_option == "*":
-            digit.config(text=active_option)
-        else:
-            try:
-                play_move(cells_location, active_option, board)
-                digit.config(text=active_option)
-            except Exception:
-                digit.config(bg=WRONG_MOVE)            
+    def on_solve_click(self):
+        #Clear then solve
+        for index in self.string_vars.keys():
+            self.string_vars[index].set("")
+            self.board.set_cell(int(index), "*")
+
+        self.solver.solve()
+        for i in range(81):
+            if str(i) in self.string_vars.keys():
+                cell = self.board.cells[i]
+                self.string_vars[str(i)].set(str(cell))
 
 
-def handle_option_click(option):
-    global active_option
-    global option_history
-    if len(option_history) != 0:
-        option_history[0].config(bg=BASE)
-        option_history.pop()
-    option.config(bg=OPTION_CLICK)
-    option_history.append(option)
-    active_option = option["text"]
 
-
-def handle_play_button_click(event):
-    frm_play_sudoku.grid()
-    frm_play_choice_btns.grid()
-    print("play")
-
-def handle_solver_button_click(event):
-    frm_play_sudoku.grid_forget()
-    frm_play_choice_btns.grid_forget()
-    print("solver")
-
-def how_to_pop_up():
-    toplevel = tk.Toplevel()
-    lbl_how_to = tk.Label(
-        master=toplevel,
-        text="herro", ####ADDDD HOWWW TOO TEXT HEEEEREEEEEE
-        font=("Courier", 16),
-        height=0,
-        width=80,
-    )
-    lbl_how_to.grid(row=0, column=0, padx=10, pady=10)
-
-window = tk.Tk()
-window.title("Play Sudoku")
-
-frm_buttons = tk.Frame(
-    master=window,
-    relief=tk.FLAT,
-    borderwidth=1,
-)
-
-btn_play = tk.Button(
-    master=frm_buttons,
-    text="PLAY",
-    font=("Courier", 22),
-    bg=BASE,
-)
-
-btn_play.bind(
-    "<Button-1>",
-    handle_play_button_click,
-)
-
-btn_play.grid(row=0, column=0, padx=10, pady=10)
-
-btn_solver = tk.Button(
-    master=frm_buttons,
-    text="SOLVER",
-    font=("Courier", 22),
-    bg=BASE,
-)
-
-btn_solver.bind(
-    "<Button-1>",
-    handle_solver_button_click,
-)
-
-btn_solver.grid(row=0, column=1, padx=10, pady=10)
-
-btn_how_to = tk.Button(
-    master=frm_buttons,
-    text="HOW TO",
-    font=("Courier", 22),
-    bg=BASE,
-    command=how_to_pop_up,
-)
-
-btn_how_to.grid(row=0, column=3, padx=10, pady=10)
-
-frm_buttons.grid(padx=5)
-
-frm_play_sudoku = tk.Frame(
-    master=window,
-    relief=tk.FLAT,
-    borderwidth=1,
-)
-
-for i in range(3):
-    for j in range(3):
-        frm_board = tk.Frame(
-            master=frm_play_sudoku,
-            relief=tk.GROOVE,
-            borderwidth=4,
+    def on_help_click(self):
+        toplevel = tk.Toplevel()
+        lbl_how_to = tk.Label(
+            master=toplevel,
+            text=self.help_str,
+            font=("Courier", 16),
+            height=0,
+            width=80,
         )
-        frm_board.grid(row=i, column=j, padx=1, pady=1, sticky="nsew")
-        for ii in range(3):
-            for jj in range(3):
-                frm_section = tk.Frame(
-                    master=frm_board,
-                    relief=tk.FLAT,
-                    borderwidth=1,
+        lbl_how_to.grid(row=0, column=0, padx=10, pady=10)
+
+
+
+    def on_cell_changed(self, cell, index, value):
+        cell.config(bg=self.BASE)
+        if len(value.get()) == 0:
+            return
+
+        if len(value.get()) > 1:
+            value.set(value.get()[:1])
+
+
+        possible = "123456789"
+        if not value.get()[0] in possible:
+            value.set("")
+            self.board.set_cell(index, "*")
+            return
+
+        num = int(value.get())
+        try:
+            self.board.play_move(index, num)
+        except:
+            cell.config(bg=self.WRONG_MOVE)
+            
+
+
+    def start(self):
+        window = tk.Tk()
+        window.title("SlickSudoku")
+
+        top_buttons = tk.Frame(
+            master=window,
+            relief=tk.FLAT,
+            borderwidth=1,
+        )
+
+        clear = tk.Button(
+            master=top_buttons,
+            text="Clear",
+            font=("Courier", 22),
+            bg=self.BASE,
+            padx=10,
+            pady=10,
+            command=self.on_clear_click
+        )
+        clear.grid(row=0, column=0)
+
+        solve = tk.Button(
+            master=top_buttons,
+            text="Solve",
+            font=("Courier", 22),
+            bg=self.BASE,
+            padx=10,
+            pady=10,
+            command=self.on_solve_click
+        )
+        solve.grid(row=0, column=1)
+
+        help_button = tk.Button(
+            master=top_buttons,
+            text="Help",
+            font=("Courier", 22),
+            bg=self.BASE,
+            command=self.on_help_click,
+            padx=10,
+            pady=10
+        )
+        help_button.grid(row=0, column=2)
+
+        top_buttons.grid(padx=5)
+
+        board_frame = tk.Frame(
+            master=window,
+            relief=tk.FLAT,
+            borderwidth=1,
+        )
+        board_frame.grid()
+
+        for section_row in range(3):
+            for section_col in range(3):
+                section = tk.Frame(
+                    master=board_frame,
+                    relief=tk.GROOVE,
+                    borderwidth=4,
+                    padx=1,
+                    pady=1
                 )
-                frm_section.grid(row=ii, column=jj, padx=1, pady=1, sticky="nsew")
-                if cells[count] != "*":
-                    lbl_digit = tk.Label(
-                        master=frm_section,
-                        bg=STATIC_INDICES,
-                        text=f'{cells[count]}',
-                        font=("Courier", 44),
-                        width=2
-                    )
-                else:
-                    lbl_digit = tk.Label(
-                        master=frm_section,
-                        bg=BASE, 
-                        text=f'{cells[count]}',
-                        font=("Courier", 44),
-                        width=2
-                    )
-                    lbl_digit.bind(
-                        "<Button-1>", 
-                        lambda event,
-                        cells=cells,
-                        cells_location=count,
-                        digit=lbl_digit,
-                        board=board: 
-                        handle_cell_click(cells, cells_location, digit, board)
-                    )
-                count += 1
-                lbl_digit.pack( fill="both", expand=True)
+                section.grid(row=section_row, column=section_col, sticky="nsew")
 
-frm_play_sudoku.grid()
 
-frm_play_choice_btns = tk.Frame(
-    master=window,
-    relief=tk.FLAT,
-    borderwidth=1,
-)
+                for cell_row in range(3):
+                    for cell_col in range(3):
+                        row = section_row * 3 + cell_row
+                        col = section_col * 3 + cell_col
+                        index = row * 9 + col
 
-counter = []
-c = 0
-for i in range(9):
-    counter.append(i+1)
-counter.append('*')
+                        cell = tk.Frame(
+                            master=section,
+                            relief=tk.FLAT,
+                            borderwidth=1,
+                            padx=1,
+                            pady=1,
+                        )
+                        cell.grid(row=cell_row, column=cell_col, sticky="nsew")
 
-for i in range(2):
-    for j in range(5):
-        frm_choices = tk.Frame(
-            master=frm_play_choice_btns,
-            relief=tk.GROOVE,
-            borderwidth=4,
-        )
-        frm_choices.grid(row=i, column=j, padx=1, pady=1, sticky="nsew")
-        lbl_option = tk.Label(
-            master=frm_choices,
-            bg=BASE,
-            text=f'{counter[c]}',
-            font=("Courier", 44),
-            width=2
-        )
-        lbl_option.bind(
-            "<Button-1>", 
-            lambda event,
-            option=lbl_option: 
-            handle_option_click(option)
-        )
-        lbl_option.pack()
-        c += 1
+                        value = self.board.get_cell(index)
+                        if value != "*":
+                            value_label = tk.Label(
+                                master=cell,
+                                bg=self.STATIC_INDICES,
+                                text=f'{value}',
+                                font=("Courier", 44),
+                                width=2,
+                            )
+                            value_label.pack(fill="both", expand=True)
 
-frm_play_choice_btns.grid(pady=3)
+                        else:
+                            sv = tk.StringVar()
+                            value_label = tk.Entry(
+                                master=cell,
+                                bg=self.BASE, 
+                                font=("Courier", 44),
+                                width=2,
+                                justify=tk.CENTER,
+                                textvariable=sv
+                            )
+                            sv.trace("w", lambda name, index, mode, cell=value_label, sv=sv, 
+                                index2=index: self.on_cell_changed(cell, index2, sv))
+                            self.string_vars[str(index)] = sv
+                            value_label.pack(fill="both", expand=True)
 
-frm_solve_sudoku = tk.Frame(
-    master=window,
-)
 
-window.mainloop()
-
+        window.mainloop()

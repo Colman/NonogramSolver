@@ -9,7 +9,7 @@ class Board:
 	static_indices = [] #Indices of cells that cannot be changed
 
 	def __init__(self, cells=[]):
-		if len(cells) == 0 :
+		if len(cells) == 0:
 			#Blank cells are the * character
 			for i in range(81):
 				self.cells.append("*")
@@ -46,7 +46,7 @@ class Board:
 				self.static_indices.append(i)
 
 		self.cells = cells
-			
+	
 
 
 	def get_cell(self, index):
@@ -271,5 +271,3 @@ class Board:
 
 		print("")
 
-	def get_cells(self):
-		return self.cells
