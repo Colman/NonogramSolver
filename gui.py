@@ -109,6 +109,7 @@ def handle_solve_button_click():
                 cells.append('*')
             else:
                 cells.append(int(val))
+    # print(cells)
     board = Board(cells)
     cells = []
     for section in range(9):
@@ -119,12 +120,20 @@ def handle_solve_button_click():
     start = time.time()
     brute.solve()
     end = time.time()
+    # board.print()
+    toplevel = tk.Toplevel()
+    frm_solution_pop = tk.Frame(
+        master=toplevel,
+        relief=tk.FLAT,
+        borderwidth=1,
+    )
+    board_setup(frm_solution_pop, 'label', board)
+    frm_solution_pop.grid(row=0, column=0, sticky="nsew")
 
-    print_board(board, cells, frm_solve_sudoku)
+    
+
 
 def label_setup(frm_section, board, count):
-    # print(cells[:10])
-    print(count)
     
     if cells[count] != "*":
         lbl_digit = tk.Label(
