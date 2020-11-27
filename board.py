@@ -76,21 +76,6 @@ class Board:
 
 
 
-	def set_cell_by_label(self, label, value):
-		'''
-		Sets the value of a cell using a label
-		Args:
-			label - Label of the cell. (A0, C3, etc.)
-			value - The value of the cell ranging from [1-9]
-		Returns:
-			None
-		'''
-
-		index = self.get_index_from_label(label)
-		self.set_cell(index, value)
-
-
-
 	def get_index_from_label(self, label):
 		'''
 		Converts label to index
@@ -100,8 +85,15 @@ class Board:
 			The index of the cell ranging from [0-80]
 		'''
 
+		if len(label) != 2:
+			return -1
+
 		letters = "ABCDEFGHI"
+		digits = "012345678"
 		col = letters.find(label[0])
+		if col == -1 or label[1] not in digits:
+			return -1
+
 		return int(label[1]) * 9 + col
 
 
