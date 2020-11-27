@@ -14,6 +14,7 @@ class Board:
 			for i in range(81):
 				self.cells.append("*")
 		else:
+			self.set_static_indices(cells)
 			self.cells = cells
 
 
@@ -39,14 +40,23 @@ class Board:
 			except:
 				pass
 
-		#Fill in indices that cannot be changed
+		self.set_static_indices(cells)
+		self.cells = cells
+
+
+	def set_static_indices(self, cells):
+		'''
+		Fill in indices that cannot be changed
+		Args:
+			cells - the array containing starting board position
+		Returns:
+			None
+		'''
+		
 		self.static_indices = []
 		for i in range(len(cells)):
 			if cells[i] != "*":
 				self.static_indices.append(i)
-
-		self.cells = cells
-			
 
 
 	def get_cell(self, index):
