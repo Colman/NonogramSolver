@@ -6,7 +6,7 @@ Sudoku player and solver that comes with both a GUI and CLI.
 <br/>
 Colman Koivisto
 <br/>
-Duncan
+Duncan Krammer
 <br/>
 Khrystina Vrublevska
 <br/>
