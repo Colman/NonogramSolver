@@ -19,9 +19,9 @@ class Cli:
 		Returns:
 			None
 		'''
-		
+
 		while True:
-			cmd = input("Please enter a move (ex. B3 2), \"solve\", or \"show\": ")
+			cmd = input("Please enter a move (ex. B3 2), \"solve\", \"show\", or \"end\": ")
 			if cmd == "solve":
 				start = time.time()
 				try:
@@ -39,21 +39,24 @@ class Cli:
 			elif cmd == "show":
 				self.board.print()
 
+			elif cmd == "end":
+				print("Bye!")
+				break
+
 			else:
 				cmds = cmd.split(" ")
 				if len(cmds) == 2:
 					index = self.board.get_index_from_label(cmds[0])
 					if index == -1:
-						print("Invalid move1")
+						print("Invalid move")
 
 					else:
 						try:
 							value = int(cmds[1])
 							self.board.play_move(index, value)
 						except:
-							print("Invalid move2")
-							return
+							print("Invalid move")
 
 				else:
-					print("Invalid move3")
+					print("Invalid move")
 

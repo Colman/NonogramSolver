@@ -9,50 +9,57 @@ board = Board()
 ans = input("Select mode (cli/gui/compare): ")
 
 if ans == "cli" or ans == "gui":
-	brute = Brute(board)
-	file_name = input("What board would you like? (easy/medium/hard/insane): ")
-	board.parse_board("boards/" + file_name + ".txt")
+        brute = Brute(board)
+        while(1):
+                file_name = input("What board would you like? (easy/medium/hard/insane): ")
+                if file_name not in ["easy", "medium", "hard", "insane"]:
+                        print("Invalid puzzle")
+                else:
+                        break
 
-	if ans == "cli":
-		cli = Cli(board, brute)
-		cli.start()
+        board.parse_board("boards/" + file_name + ".txt")
 
-	else:
-		gui = Gui(board, brute)
-		gui.start()
+        if ans == "cli":
+                cli = Cli(board, brute)
+                cli.start()
+        else:
+                gui = Gui(board, brute)
+                gui.start()
 
+elif ans == "compare":
+        board = Board()
+        puzzles = ["boards/easy.txt", "boards/medium.txt", "boards/hard.txt", "boards/insane.txt"]
+
+        for puzzle in puzzles:
+                print("======================================================")
+                print(puzzle)
+                print()
+
+                #Brute force method
+                print("Brute force solution")
+                board.parse_board(puzzle)
+                brute = Brute(board)
+
+                start = time.time()
+                brute.solve()
+                end = time.time()
+                brute_time = end - start
+
+                board.print()
+
+                #Crook method (partial)
+                print("Partial Crook method solution")
+                board.parse_board(puzzle)
+
+                start = time.time()
+                crook.crook_incomplete(board)
+                end = time.time()
+                crook_time = end - start
+
+                board.print()
+
+                #Print results
+                print("Brute time: {:f} seconds".format(brute_time))
+                print("Crook time: {:f} seconds".format(crook_time))
 else:
-	board = Board()
-	puzzles = ["boards/easy.txt", "boards/medium.txt", "boards/hard.txt", "boards/insane.txt"]
-
-	for puzzle in puzzles:
-	    print("======================================================")
-	    print(puzzle)
-	    print()
-	    
-	    #Brute force method
-	    print("Brute force solution")
-	    board.parse_board(puzzle)
-	    brute = Brute(board)
-
-	    start = time.time()
-	    brute.solve()
-	    end = time.time()
-	    brute_time = end - start
-
-	    board.print()
-
-	    #Crook method (partial)
-	    print("Partial Crook method solution")
-	    board.parse_board(puzzle)
-
-	    start = time.time()
-	    crook.crook_incomplete(board)
-	    end = time.time()
-	    crook_time = end - start
-
-	    board.print()
-
-	    #Print results
-	    print("Brute time: {:f} seconds".format(brute_time))
-	    print("Crook time: {:f} seconds".format(crook_time))
+        print("Invalid option, goodbye!")
