@@ -24,6 +24,9 @@ def crook_incomplete(board):
         candidates.exhaust_candidates(board)
         cand_board_state = board.cells
 
+        if old_board_state == cand_board_state: break
+    
+        '''
         #Check if all cells are filled
         if '*' in cand_board_state: break
 
@@ -37,3 +40,7 @@ def crook_incomplete(board):
         #Break if no changes were made
         if (old_board_state == cand_board_state) and (old_board_state == pf_board_state):
             break
+        '''
+
+
+        
