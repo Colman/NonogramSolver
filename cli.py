@@ -2,12 +2,24 @@ import time
 
 
 class Cli:
+	'''
+	Handles the command line interface for SlickSudoku
+	'''
+
 	def __init__(self, board, solver):
 		self.board = board
 		self.solver = solver
 
 
 	def start(self):
+		'''
+		Starts the command line interface loop
+		Args:
+			None
+		Returns:
+			None
+		'''
+		
 		while True:
 			cmd = input("Please enter a move (ex. B3 2), \"solve\", or \"show\": ")
 			if cmd == "solve":

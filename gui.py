@@ -17,10 +17,7 @@ class Gui:
     WRONG_MOVE = "#c32148"
 
     #Events
-    active_option = None
-    cell_history = []
-    option_history = []
-    string_vars = {}
+    string_vars = {} #Key: str(index), value: Tkinter string value of each cell
 
     #Help
     help_str = '''
@@ -38,6 +35,13 @@ class Gui:
 
 
     def on_clear_click(self):
+        '''
+        On-click listener for clearing the board
+        Args:
+            None
+        Returns:
+            None
+        '''
         for index in self.string_vars.keys():
             self.string_vars[index].set("")
             self.board.set_cell(int(index), "*")
@@ -45,6 +49,14 @@ class Gui:
 
 
     def on_solve_click(self):
+        '''
+        On-click listener for solving the board
+        Args:
+            None
+        Returns:
+            None
+        '''
+
         #Clear then solve
         for index in self.string_vars.keys():
             self.string_vars[index].set("")
@@ -59,6 +71,14 @@ class Gui:
 
 
     def on_help_click(self):
+        '''
+        On-click listener for help button
+        Args:
+            None
+        Returns:
+            None
+        '''
+
         toplevel = tk.Toplevel()
         lbl_how_to = tk.Label(
             master=toplevel,
@@ -72,6 +92,16 @@ class Gui:
 
 
     def on_cell_changed(self, cell, index, value):
+        '''
+        On-change listener for a cell
+        Args:
+            cell - Cell Tkinter widget
+            index - Index of the cell on the board
+            value - Tkinter VarString of the value
+        Returns:
+            None
+        '''
+
         cell.config(bg=self.BASE)
         if len(value.get()) == 0:
             return
@@ -95,6 +125,14 @@ class Gui:
 
 
     def start(self):
+        '''
+        Starts the GUI instance
+        Args:
+            None
+        Returns:
+            None
+        '''
+
         window = tk.Tk()
         window.title("SlickSudoku")
 
