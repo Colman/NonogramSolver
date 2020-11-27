@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import Toplevel
 from board import Board
 from brute import Brute
 import time
@@ -14,15 +15,37 @@ WRONG_MOVE = "#c32148"
 NUM_SIZE = 22
 BUTTON_TEXT_SIZE = 12
 
+how_to = '''
+In order to play the game, click on a
+ number at the bottom, and when it turns
+red, click on the puzzle square you'd
+ like to put it in. If the square turns
+red, that means your move is invalid: 
+somewhere on the board there is another 
+number such that putting yours down 
+breaks the rules. 
+
+When you navigate to the "solver" tab, 
+you will need to fill in the squares
+with puzzle that you'd like solved. 
+Once you're satisfied, press "solve". 
+A pop up will either show you the 
+correct solution or let you know that 
+yourpuzzle isn't valid.
+
+Colour and text size customizations are 
+available in the gui.py file at the top.
+Restart Sudoku Solver for the 
+changes to take effect. 
+'''
+
 
 board = Board()
 board.parse_board("boards/hard.txt")
-# print(board.get_cells()[:30])
 cells = []
 
 for section in range(9):
     cells.extend(board.get_section(section))
-print(cells[:30])
 
 
 def play_move(loc, val, board):
@@ -86,7 +109,7 @@ def handle_how_to_button_click():
     toplevel = tk.Toplevel()
     lbl_how_to = tk.Label(
         master=toplevel,
-        text="herro", ####ADDDD HOWWW TOO TEXT HEEEEREEEEEE
+        text=how_to,
         font=("Courier", 16),
         height=0,
         width=50,
@@ -109,7 +132,6 @@ def handle_solve_button_click():
                 cells.append('*')
             else:
                 cells.append(int(val))
-    # print(cells)
     board = Board(cells)
     cells = []
     for section in range(9):
@@ -118,9 +140,24 @@ def handle_solve_button_click():
 
     brute = Brute(board)
     start = time.time()
-    brute.solve()
+    try:
+        brute.solve()
+    except Exception as e:
+        toplevel_e = tk.Toplevel()
+        lbl_e = tk.Label(
+            master=toplevel_e,
+            text=str(e),
+            font=("Courier", 16),
+            height=0,
+            width=0,
+            bg=SUDOKU_CLICK,
+            fg=WRONG_MOVE,
+            padx=30, 
+            pady=30,
+        )
+        lbl_e.grid(row=0, column=0, sticky="nsew")
+        return
     end = time.time()
-    # board.print()
     toplevel = tk.Toplevel()
     frm_solution_pop = tk.Frame(
         master=toplevel,
@@ -128,13 +165,16 @@ def handle_solve_button_click():
         borderwidth=1,
     )
     board_setup(frm_solution_pop, 'label', board)
-    frm_solution_pop.grid(row=0, column=0, sticky="nsew")
+    frm_solution_pop.grid(row=1, column=0, sticky="nsew")
+    frm_play_sudoku.grid_forget()
+    frm_buttons.grid()
 
     
 
 
 def label_setup(frm_section, board, count):
-    
+    cells = board.get_cells()
+
     if cells[count] != "*":
         lbl_digit = tk.Label(
             master=frm_section,
@@ -349,7 +389,6 @@ frm_solve_sudoku = tk.Frame(
 board_setup(frm_solve_sudoku, 'entry', board)
 
 frm_solve_sudoku.grid_forget()
-# frm_solve_sudoku.grid()
 
 btn_solve = tk.Button(
     master=window,
@@ -360,7 +399,6 @@ btn_solve = tk.Button(
 )
 
 btn_solve.grid_forget()
-# btn_solve.grid()
 
 window.mainloop()
 
