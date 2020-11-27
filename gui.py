@@ -22,7 +22,7 @@ cells = []
 
 for section in range(9):
     cells.extend(board.get_section(section))
-# print(cells[:30])
+print(cells[:30])
 
 
 def play_move(loc, val, board):
@@ -123,7 +123,8 @@ def handle_solve_button_click():
     print_board(board, cells, frm_solve_sudoku)
 
 def label_setup(frm_section, board, count):
-    global cells
+    # print(cells[:10])
+    print(count)
     
     if cells[count] != "*":
         lbl_digit = tk.Label(
@@ -170,6 +171,7 @@ def entry_setup(frm_section):
 
 
 def board_setup(frame, option, board):
+    count = 0
     #set up board
     for i in range(3):
         for j in range(3):
@@ -193,7 +195,7 @@ def board_setup(frame, option, board):
                         borderwidth=border_w,
                     )
                     frm_section.grid(row=ii, column=jj, padx=1, pady=1, sticky="nsew")
-                    count = 0
+                    
                     if option == 'label':
                         label_setup(frm_section, board, count)
                         count += 1
