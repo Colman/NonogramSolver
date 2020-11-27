@@ -1,3 +1,9 @@
+'''
+Authored by Duncan Krammer
+2020-11-26
+'''
+#===============================================================================
+
 def initial_candidates(board):
     '''
     Go through cells in order and determine
@@ -27,6 +33,8 @@ def initial_candidates(board):
 
     return candidates
 
+#===============================================================================
+
 def check_candidates(board, candidates):
     '''
     Iterate through candidates dict. If only
@@ -55,6 +63,7 @@ def check_candidates(board, candidates):
 
     return board_changed
 
+#===============================================================================
 
 def update_candidates(board, candidates):
     '''
@@ -81,7 +90,8 @@ def update_candidates(board, candidates):
     updated_bool = not updated_candidates == candidates #True if no updates made
     
     return updated_candidates, updated_bool
-    
+
+#===============================================================================
 
 def exhaust_candidates(board):
     '''
@@ -107,10 +117,9 @@ def exhaust_candidates(board):
         #board_updates += 1
     #print("Board updates: ", board_updates)
 
-
     return candidates
 
-
+#===============================================================================
 
 
 
